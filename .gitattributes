@@ -1,0 +1,4 @@
+# Encrypted signing material is ciphertext, not text. Git will guess "text" for
+# a small AES blob that happens to contain no NUL, and a checkout under
+# core.autocrlf=true then rewrites its line endings and corrupts it.
+*.enc binary
