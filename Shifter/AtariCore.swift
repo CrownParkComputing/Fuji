@@ -351,8 +351,10 @@ final class AtariCore: ObservableObject {
         statusTimer?.invalidate()
         statusTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             guard let self, self.isRunning else { return }
-            self.fps = atarist_core_fps()
-            self.audioLevel = atarist_core_audio_level()
+            // Int(): the bridge returns int32_t and both properties are
+            // Int. Swift will not widen a C integer for you.
+            self.fps = Int(atarist_core_fps())
+            self.audioLevel = Int(atarist_core_audio_level())
         }
     }
 }

@@ -46,7 +46,11 @@ struct ControlsOverlay: View {
             // The picker hands out a security-scoped URL that goes stale, so
             // the image is copied into the library before the drive is
             // pointed at it.
-            if case .success(let urls) = result, let url = urls.first,
+            // One URL, not an array: this fileImporter does not pass
+            // allowsMultipleSelection, and swapping a disk wants a single
+            // image anyway. LauncherView's importer DOES ask for multiple,
+            // which is why that one destructures a collection.
+            if case .success(let url) = result,
                let imported = core.importGame(from: url) {
                 core.setFloppy(imported)
             }
