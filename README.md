@@ -1,12 +1,12 @@
-# Fuji
+# Shifter
 
-Fuji is an Atari ST emulator for iPhone and iPad: a SwiftUI front end over the
+Shifter is an Atari ST emulator for iPhone and iPad: a SwiftUI front end over the
 Hatari emulator core. It exists because Apple rejected the iOS build of the
 Retro-* family under App Store guideline 4.3 as a duplicate app — so the iOS
 front end was rebuilt from nothing as its own application, in its own
 repository, under its own name.
 
-**Fuji was authored on a Linux machine and has never been compiled.** There is
+**Shifter was authored on a Linux machine and has never been compiled.** There is
 no Xcode here, so the CMake wiring, the Xcode project generation, the Swift
 sources and the plist files are all verified by inspection and syntax checks
 only. Expect the first build on a Mac to surface a handful of typos-level
@@ -16,13 +16,13 @@ fixes; that is normal and expected, not a sign the approach is wrong.
 
 ```
 build.sh                  Generates the 68000 CPU sources, configures with
-                          CMake (-G Xcode), builds the Fuji scheme.
-cmake/fuji-app.cmake      The Fuji app target, injected into Hatari's build
+                          CMake (-G Xcode), builds the Shifter scheme.
+cmake/shifter-app.cmake      The Shifter app target, injected into Hatari's build
                           via -DRETRO_ATARIST_APP_CMAKE (see below).
 core/                     Git submodule: CrownParkComputing/hatari, branch cpc
                           (Hatari upstream + the retro/ embedding layer).
-Fuji/                     The application sources:
-  FujiApp.swift           @main SwiftUI app; launcher vs. emulation screen.
+Shifter/                     The application sources:
+  ShifterApp.swift           @main SwiftUI app; launcher vs. emulation screen.
   AtariCore.swift         ObservableObject wrapping the atarist_core_* C ABI.
   EmuMetalView.swift      MTKView + 50 Hz display link, Metal texture upload,
                           touch-to-mouse.
@@ -70,26 +70,26 @@ The script does three things:
    where `core/retro/target.cmake` already expects them.
 2. **Configures Hatari as the top-level CMake project** with the embedding
    layer injected (`-DCMAKE_PROJECT_INCLUDE=core/retro/embed.cmake`) and
-   Fuji's app target injected on top of that
-   (`-DRETRO_ATARIST_APP_CMAKE=cmake/fuji-app.cmake`). The SDL2 stub under
+   Shifter's app target injected on top of that
+   (`-DRETRO_ATARIST_APP_CMAKE=cmake/shifter-app.cmake`). The SDL2 stub under
    `core/retro/cmake-stubs/` satisfies Hatari's configure-time
    `find_package(SDL2)`; no SDL code is linked. See
    `core/../docs/NATIVE_BUILD.md` in the Retro-AtariST repository for the
    full story of why the nesting goes this way round.
-3. **Builds the Fuji scheme** (Release) through `cmake --build`.
+3. **Builds the Shifter scheme** (Release) through `cmake --build`.
 
 The output app bundle is under
-`build/<sdk>/Release-<sdk>/Fuji.app`.
+`build/<sdk>/Release-<sdk>/Shifter.app`.
 
 Signing follows the pattern the old Retro-AtariST iOS app used: automatic by
-default, overridable with `-DFUJI_CODE_SIGN_STYLE=Manual`,
-`-DFUJI_PROVISIONING_PROFILE=...`, `-DFUJI_CODE_SIGN_IDENTITY=...`, and
-`-DFUJI_BUILD_NUMBER=...` (CFBundleVersion; CI should pass a UTC timestamp —
+default, overridable with `-DSHIFTER_CODE_SIGN_STYLE=Manual`,
+`-DSHIFTER_PROVISIONING_PROFILE=...`, `-DSHIFTER_CODE_SIGN_IDENTITY=...`, and
+`-DSHIFTER_BUILD_NUMBER=...` (CFBundleVersion; CI should pass a UTC timestamp —
 App Store Connect refuses a build number it has seen before).
 
 ## Running
 
-On first launch Fuji creates `Documents/AtariST/` (visible in the Files app,
+On first launch Shifter creates `Documents/AtariST/` (visible in the Files app,
 via UIFileSharingEnabled) with `TOS/`, `Games/` and `Demo/` inside, copies the
 bundled EmuTOS into `TOS/`, and hands the core the paths. Drop disk images
 (`.st`, `.msa`, `.dim`, `.stx`, `.ipf`, `.img`, `.zip`) into `Games/` via
@@ -107,7 +107,7 @@ slots, the ST keyboard, and "arrange controls": an edit mode where clusters
 drag to move, tap to select for size/spacing/visibility, and a panel offers
 stick/d-pad, opacity, add-a-button and reset. Layouts save to
 `Documents/AtariST/Layouts/pad_layout_atarist.json` in the same JSON format
-the rest of the family uses, so an arrangement made in Fuji loads in
+the rest of the family uses, so an arrangement made in Shifter loads in
 Retro-Saturn and vice versa. Machine options (model, memory, monitor,
 blitter, accurate FDC) are under the gear on the launcher screen and apply
 to the next boot. The monitor defaults to RGB on purpose: TOS reads the
@@ -120,7 +120,7 @@ lands you in ST-HIGH (640×400, two colours), where essentially no game runs.
   would make App Store distribution impossible (W^X). Do not touch the CPU
   settings.
 - The **app icon is a generated placeholder**
-  (`Fuji/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png`) — replace it
+  (`Shifter/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png`) — replace it
   before submission.
 - `Bridging/shim.m` is an empty Objective-C file that exists for one reason:
   Xcode only honours `SWIFT_OBJC_BRIDGING_HEADER` on a target that compiles at
@@ -135,6 +135,6 @@ lands you in ST-HIGH (640×400, two colours), where essentially no game runs.
 
 ## Licence
 
-Fuji links Hatari, which is GPL v2+. EmuTOS is bundled under its own licence
-(see `Fuji/Resources/EmuTOS/LICENSE.txt`). Front-end sources:
+Shifter links Hatari, which is GPL v2+. EmuTOS is bundled under its own licence
+(see `Shifter/Resources/EmuTOS/LICENSE.txt`). Front-end sources:
 GPL-2.0-or-later, matching the embedding layer they link against.

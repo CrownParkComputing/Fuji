@@ -1,7 +1,7 @@
 //
-//  FujiApp.swift
+//  ShifterApp.swift
 //
-//  Fuji is a SwiftUI front end for the Hatari Atari ST emulator core. The
+//  Shifter is a SwiftUI front end for the Hatari Atari ST emulator core. The
 //  emulator itself lives in the `core` submodule and is reached only through
 //  the plain-C ABI in atarist_bridge.h (see AtariCore.swift).
 //
@@ -9,7 +9,7 @@
 import SwiftUI
 
 @main
-struct FujiApp: App {
+struct ShifterApp: App {
     @StateObject private var core: AtariCore
     @StateObject private var pad: TouchPadController
 

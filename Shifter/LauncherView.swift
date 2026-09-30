@@ -15,8 +15,8 @@ import UniformTypeIdentifiers
 /// kept separate because it is a preservation format rather than a plain
 /// sector image, and .zip is the system's own type.
 extension UTType {
-    static let atariDiskImage = UTType(importedAs: "com.crownparkcomputing.fuji.atari-disk-image")
-    static let atariIPF = UTType(importedAs: "com.crownparkcomputing.fuji.atari-ipf")
+    static let atariDiskImage = UTType(importedAs: "com.crownparkcomputing.shifter.atari-disk-image")
+    static let atariIPF = UTType(importedAs: "com.crownparkcomputing.shifter.atari-ipf")
 }
 
 struct LauncherView: View {
@@ -37,7 +37,7 @@ struct LauncherView: View {
                     gameList
                 }
             }
-            .navigationTitle("Fuji")
+            .navigationTitle("Shifter")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -154,12 +154,12 @@ struct AboutView: View {
                     LabeledContent("Bridge ABI", value: "\(core.bridgeABI)")
                 }
                 Section("ROM") {
-                    Text("Fuji ships with EmuTOS 1.4, an open-source replacement for the Atari ST ROM. You can drop an original TOS image into AtariST/TOS in the Files app.")
+                    Text("Shifter ships with EmuTOS 1.4, an open-source replacement for the Atari ST ROM. You can drop an original TOS image into AtariST/TOS in the Files app.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
             }
-            .navigationTitle("About Fuji")
+            .navigationTitle("About Shifter")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }

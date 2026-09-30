@@ -90,7 +90,7 @@ final class TouchPadEngine {
     }
 
     /// Arranging: controls drag instead of press; a tap selects one for the
-    /// size slider. The Fuji host releases everything BEFORE entering edit
+    /// size slider. The Shifter host releases everything BEFORE entering edit
     /// mode (the C++ relies on its host doing the same -- entering with a
     /// button held would strand it in held_ forever).
     func setEditing(_ on: Bool) {
