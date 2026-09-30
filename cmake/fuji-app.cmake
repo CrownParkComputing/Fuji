@@ -13,6 +13,8 @@ set(FUJI_APP "${FUJI_ROOT}/Fuji")
 
 set(FUJI_RESOURCES
 	"${FUJI_APP}/PrivacyInfo.xcprivacy"
+	# GPLv2: the app links Hatari, and the licence text must ship with it.
+	"${FUJI_ROOT}/LICENSE"
 	# Bundled as source and compiled at runtime (see attach(to:) in
 	# EmuMetalView.swift): CMake's Xcode generator does not recognise the
 	# .metal file type, so a build-phase compile would silently not happen.
