@@ -46,6 +46,9 @@ add_executable(Fuji MACOSX_BUNDLE
 	"${FUJI_APP}/LauncherView.swift"
 	"${FUJI_APP}/MachineSetupView.swift"
 	"${FUJI_APP}/ControlsOverlay.swift"
+	"${FUJI_APP}/TouchPad.swift"
+	"${FUJI_APP}/TouchPadOverlayView.swift"
+	"${FUJI_APP}/TouchPadDesigner.swift"
 	"${FUJI_APP}/STKeyboardView.swift"
 	# The bridging header is only honoured once the target compiles at least
 	# one Objective-C source; shim.m exists solely to be that source.

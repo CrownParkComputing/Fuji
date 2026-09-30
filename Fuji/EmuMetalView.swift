@@ -14,42 +14,33 @@ import SwiftUI
 import UIKit
 
 struct EmuMetalView: UIViewRepresentable {
-    @ObservedObject var core: AtariCore
-
     func makeCoordinator() -> Coordinator {
-        Coordinator(core: core)
+        Coordinator()
     }
 
-    func makeUIView(context: Context) -> EmuMTKView {
-        let view = EmuMTKView(frame: .zero, device: MTLCreateSystemDefaultDevice())
-        view.coordinator = context.coordinator
+    func makeUIView(context: Context) -> MTKView {
+        let view = MTKView(frame: .zero, device: MTLCreateSystemDefaultDevice())
+        // The pad overlay sits above this view and owns every touch.
+        view.isUserInteractionEnabled = false
         context.coordinator.attach(to: view)
         return view
     }
 
-    func updateUIView(_ uiView: EmuMTKView, context: Context) {
-        context.coordinator.core = core
-    }
+    func updateUIView(_ uiView: MTKView, context: Context) {}
 
-    static func dismantleUIView(_ uiView: EmuMTKView, coordinator: Coordinator) {
+    static func dismantleUIView(_ uiView: MTKView, coordinator: Coordinator) {
         coordinator.detach()
     }
 
     final class Coordinator: NSObject, MTKViewDelegate {
-        var core: AtariCore
-
-        private weak var view: EmuMTKView?
+        private weak var view: MTKView?
         private var commandQueue: MTLCommandQueue?
         private var pipeline: MTLRenderPipelineState?
         private var texture: MTLTexture?
         private var uploadedFrame: Int64 = -1
         private var displayLink: CADisplayLink?
 
-        init(core: AtariCore) {
-            self.core = core
-        }
-
-        func attach(to view: EmuMTKView) {
+        func attach(to view: MTKView) {
             self.view = view
             guard let device = view.device else { return }
             commandQueue = device.makeCommandQueue()
@@ -187,86 +178,7 @@ struct EmuDrawParams {
     var halfSize: SIMD2<Float>
 }
 
-/// MTKView subclass so touches can drive the emulated mouse directly on the
-/// picture: drag moves the mouse relative (in ST pixels), a tap clicks the
-/// left button. Joystick control lives in ControlsOverlay's d-pad instead --
-/// mixing both onto the same surface made accidental joystick wiggles while
-/// mousing inevitable.
-final class EmuMTKView: MTKView {
-    weak var coordinator: EmuMetalView.Coordinator?
-    private var lastTouchLocation: CGPoint?
-    private var touchStartLocation: CGPoint?
-    private var touchStartTime: TimeInterval = 0
-
-    override init(frame frameRect: CGRect, device: MTLDevice?) {
-        super.init(frame: frameRect, device: device)
-        isMultipleTouchEnabled = false
-    }
-
-    required init(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    /// Scale from view points to ST pixels so a finger drag of N points moves
-    /// the pointer by the distance it *looks* like on the emulated screen.
-    private func motionScale() -> CGSize {
-        guard let texture = coordinatorTextureSize() else {
-            return CGSize(width: 1, height: 1)
-        }
-        return CGSize(width: texture.width / max(bounds.width, 1),
-                      height: texture.height / max(bounds.height, 1))
-    }
-
-    private func coordinatorTextureSize() -> CGSize? {
-        var width: Int32 = 0
-        var height: Int32 = 0
-        var pitch: Int32 = 0
-        guard atarist_core_get_framebuffer(&width, &height, &pitch) != nil,
-              width > 0, height > 0 else { return nil }
-        return CGSize(width: CGFloat(width), height: CGFloat(height))
-    }
-
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
-        let location = touch.location(in: self)
-        lastTouchLocation = location
-        touchStartLocation = location
-        touchStartTime = touch.timestamp
-    }
-
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first,
-              let last = lastTouchLocation else { return }
-        let location = touch.location(in: self)
-        let scale = motionScale()
-        let dx = Int32((location.x - last.x) * scale.width)
-        let dy = Int32((location.y - last.y) * scale.height)
-        if dx != 0 || dy != 0 {
-            coordinator?.core.mouseMotion(dx: dx, dy: dy)
-        }
-        lastTouchLocation = location
-    }
-
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        defer {
-            lastTouchLocation = nil
-            touchStartLocation = nil
-        }
-        guard let touch = touches.first,
-              let start = touchStartLocation else { return }
-        let location = touch.location(in: self)
-        let moved = hypot(location.x - start.x, location.y - start.y)
-        let held = touch.timestamp - touchStartTime
-        // A short, nearly stationary touch is a click; make AND break are both
-        // delivered because games poll the IKBD, not an event queue.
-        if moved < 12, held < 0.4 {
-            coordinator?.core.mouseButton(0, pressed: true)
-            coordinator?.core.mouseButton(0, pressed: false)
-        }
-    }
-
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        lastTouchLocation = nil
-        touchStartLocation = nil
-    }
-}
+// The plain MTKView subclass with touch handling is gone: the touch pad
+// overlay (TouchPadOverlayView.swift) covers the whole picture and owns
+// every touch, forwarding the ones no control claims to the emulated mouse.
+// Two touch handlers on one screen is one too many.

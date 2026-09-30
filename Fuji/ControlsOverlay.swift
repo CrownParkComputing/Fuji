@@ -1,9 +1,11 @@
 //
 //  ControlsOverlay.swift
 //
-//  Touch controls layered over the framebuffer: a d-pad and fire button
-//  driving ST joystick port 1 (ATARIST_JOY_* bits), plus a bar of machine
-//  controls -- menu, reset, disk swap, save/load state slots, keyboard.
+//  The layer over the framebuffer: the family's configurable touch pad
+//  (TouchPadOverlayView -- stick/d-pad, fire and any user-added buttons,
+//  with unclaimed touches falling through to the emulated mouse), plus a
+//  bar of machine controls -- menu, reset, disk swap, save/load state slots,
+//  keyboard, and the "arrange controls" edit mode.
 //
 
 import SwiftUI
@@ -11,26 +13,30 @@ import UniformTypeIdentifiers
 
 struct ControlsOverlay: View {
     @EnvironmentObject private var core: AtariCore
+    @EnvironmentObject private var pad: TouchPadController
 
-    @State private var joystickMask: Int32 = 0
     @State private var showDiskSwap = false
     @State private var showError = false
 
     var body: some View {
-        VStack {
-            controlBar
-            Spacer()
-            if core.showKeyboard {
-                STKeyboardView()
-                    .transition(.move(edge: .bottom))
-            } else if MachineSettings.load().joystickEnabled {
-                HStack(alignment: .bottom) {
-                    dPad
-                    Spacer()
-                    fireButton
+        ZStack {
+            // The pad stays up while the keyboard is open: its unclaimed
+            // touches are the only mouse the emulation screen has.
+            TouchPadOverlayView(pad: pad, core: core)
+
+            VStack(spacing: 0) {
+                controlBar
+                Spacer()
+                if core.showKeyboard {
+                    STKeyboardView()
+                        .transition(.move(edge: .bottom))
                 }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 8)
+            }
+
+            if pad.editing {
+                TouchPadDesigner(pad: pad) {
+                    pad.setEditing(false)
+                }
             }
         }
         .fileImporter(
@@ -53,11 +59,10 @@ struct ControlsOverlay: View {
         .onChange(of: core.lastError) { newValue in
             showError = newValue != nil
         }
-        // Leaving the emulation screen must never leave the joystick held:
-        // the IKBD would keep reporting the direction forever.
+        // Leaving the emulation screen must never leave anything held: the
+        // IKBD would keep reporting the direction or fire forever.
         .onDisappear {
-            joystickMask = 0
-            core.joystick(0)
+            pad.releaseAll()
         }
     }
 
@@ -66,6 +71,7 @@ struct ControlsOverlay: View {
     private var controlBar: some View {
         HStack(spacing: 4) {
             Button {
+                pad.releaseAll()
                 core.stop()
             } label: {
                 Label("Menu", systemImage: "chevron.backward")
@@ -120,60 +126,16 @@ struct ControlsOverlay: View {
                 Image(systemName: "keyboard")
             }
             .accessibilityLabel("Keyboard")
+
+            Button {
+                withAnimation { pad.setEditing(!pad.editing) }
+            } label: {
+                Image(systemName: "slider.horizontal.3")
+            }
+            .accessibilityLabel("Arrange controls")
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
         .background(.ultraThinMaterial)
-    }
-
-    // MARK: - Joystick
-
-    /// One direction key. SwiftUI Buttons report only the tap, not the
-    /// press/release pair the IKBD needs, so a zero-distance DragGesture
-    /// supplies make/break instead.
-    private func directionKey(_ bit: Int32, systemImage: String) -> some View {
-        Image(systemName: systemImage)
-            .font(.title2)
-            .frame(width: 56, height: 56)
-            .background(.ultraThinMaterial, in: Circle())
-            .contentShape(Circle())
-            .simultaneousGesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { _ in setJoystickBit(bit, pressed: true) }
-                    .onEnded { _ in setJoystickBit(bit, pressed: false) }
-            )
-    }
-
-    private var dPad: some View {
-        VStack(spacing: 4) {
-            directionKey(ATARIST_JOY_UP, systemImage: "chevron.up")
-            HStack(spacing: 4) {
-                directionKey(ATARIST_JOY_LEFT, systemImage: "chevron.left")
-                // The centre spacer keeps the cross shape hittable without a
-                // dead zone in the middle.
-                Color.clear.frame(width: 56, height: 56)
-                directionKey(ATARIST_JOY_RIGHT, systemImage: "chevron.right")
-            }
-            directionKey(ATARIST_JOY_DOWN, systemImage: "chevron.down")
-        }
-    }
-
-    private var fireButton: some View {
-        Image(systemName: "circle.fill")
-            .font(.system(size: 64))
-            .foregroundStyle(.red.opacity(0.85))
-            .contentShape(Circle())
-            .simultaneousGesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { _ in setJoystickBit(ATARIST_JOY_FIRE, pressed: true) }
-                    .onEnded { _ in setJoystickBit(ATARIST_JOY_FIRE, pressed: false) }
-            )
-    }
-
-    private func setJoystickBit(_ bit: Int32, pressed: Bool) {
-        let newMask = pressed ? joystickMask | bit : joystickMask & ~bit
-        guard newMask != joystickMask else { return }
-        joystickMask = newMask
-        core.joystick(newMask)
     }
 }

@@ -10,12 +10,22 @@ import SwiftUI
 
 @main
 struct FujiApp: App {
-    @StateObject private var core = AtariCore()
+    @StateObject private var core: AtariCore
+    @StateObject private var pad: TouchPadController
+
+    init() {
+        // The pad's sink needs the core at construction; build both here so
+        // the StateObjects share one AtariCore.
+        let core = AtariCore()
+        _core = StateObject(wrappedValue: core)
+        _pad = StateObject(wrappedValue: TouchPadController(core: core))
+    }
 
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environmentObject(core)
+                .environmentObject(pad)
                 // Emulator screens are near-black; a light status bar over the
                 // framebuffer reads as a rendering bug.
                 .preferredColorScheme(.dark)
@@ -45,12 +55,10 @@ struct RootView: View {
 
 /// The framebuffer with the touch controls layered on top.
 struct EmulationView: View {
-    @EnvironmentObject private var core: AtariCore
-
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
-            EmuMetalView(core: core)
+            EmuMetalView()
                 .ignoresSafeArea()
             ControlsOverlay()
         }

@@ -29,7 +29,10 @@ Fuji/                     The application sources:
   EmuShaders.metal        One aspect-correct textured quad.
   LauncherView.swift      Game library (Documents/AtariST/Games) + importer.
   MachineSetupView.swift  Machine, memory, monitor, blitter, FDC, joystick.
-  ControlsOverlay.swift   D-pad + fire, reset, disk swap, save/load slots.
+  ControlsOverlay.swift   Machine control bar over the emulation screen.
+  TouchPad.swift          retro_touch_pad model: profiles, layout, JSON.
+  TouchPadOverlayView.swift  Multi-touch overlay engine + UIView surface.
+  TouchPadDesigner.swift  Edit-mode panel (movement, opacity, add/reset).
   STKeyboardView.swift    On-screen ST keyboard (IKBD make/break scan codes).
   Bridging/               Bridging header (+ shim.m — see below).
   Resources/EmuTOS/       EmuTOS 1.4 UK (open-source TOS replacement) + licence.
@@ -94,14 +97,22 @@ Files, or import them with the + button. With an empty library a "Run bundled
 core demo" button boots the demo disk so a fresh install can prove video,
 audio and input end to end.
 
-While a title runs: drag on the screen moves the mouse (tap = left button),
-the d-pad and fire button drive joystick port 1, and the top bar has menu,
-reset, disk swap, save/load state slots and the ST keyboard. Machine options
-(model, memory, monitor, blitter, accurate FDC) are under the gear on the
-launcher screen and apply to the next boot. The monitor defaults to RGB on
-purpose: TOS reads the monitor type at boot and picks its screen mode from
-it, and a mono monitor lands you in ST-HIGH (640×400, two colours), where
-essentially no game runs.
+While a title runs, the configurable on-screen controller (the Retro-*
+family's shared `retro_touch_pad`) drives joystick port 1: a wobble stick or
+d-pad for direction, a FIRE button, and any extra buttons you add — including
+direction-as-button extras and `key:<scancode>` extras that press ST keys.
+Touches no control claims fall through to the emulated mouse (drag moves,
+tap clicks left). The top bar has menu, reset, disk swap, save/load state
+slots, the ST keyboard, and "arrange controls": an edit mode where clusters
+drag to move, tap to select for size/spacing/visibility, and a panel offers
+stick/d-pad, opacity, add-a-button and reset. Layouts save to
+`Documents/AtariST/Layouts/pad_layout_atarist.json` in the same JSON format
+the rest of the family uses, so an arrangement made in Fuji loads in
+Retro-Saturn and vice versa. Machine options (model, memory, monitor,
+blitter, accurate FDC) are under the gear on the launcher screen and apply
+to the next boot. The monitor defaults to RGB on purpose: TOS reads the
+monitor type at boot and picks its screen mode from it, and a mono monitor
+lands you in ST-HIGH (640×400, two colours), where essentially no game runs.
 
 ## Notes for maintainers
 
