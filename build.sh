@@ -35,6 +35,16 @@ mkdir -p "$cpu_build"
 	./gencpu
 )
 
+# HAVE_UNIX_DOMAIN_SOCKETS is forced off below, and it is NOT a networking
+# feature: src/control.c opens an AF_UNIX socket so another local process can
+# drive the emulator. Nothing on iOS can be that process, so the code is
+# already unreachable -- but it still makes the binary import socket() and
+# connect(), and this app's review notes say it has neither. Retro-Amiga was
+# rejected under guideline 5.6 for precisely that shape: notes claiming no
+# networking over a binary whose symbol table disagreed. CMake's
+# check_include_files honours a value already in the cache, so setting it
+# here means the probe never runs. The iOS job greps the built binary and
+# fails if the symbols come back.
 cmake -S "$script_dir/core" -B "$build_dir" -G Xcode \
 	-DCMAKE_PROJECT_INCLUDE="$script_dir/core/retro/embed.cmake" \
 	-DRETRO_ATARIST_APP_CMAKE="$script_dir/cmake/stdesk-app.cmake" \
@@ -42,6 +52,7 @@ cmake -S "$script_dir/core" -B "$build_dir" -G Xcode \
 	-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
 	-DENABLE_SDL3=0 \
 	-DENABLE_DSP_EMU=0 \
+	-DHAVE_UNIX_DOMAIN_SOCKETS=0 \
 	-DENABLE_OSX_BUNDLE=0 \
 	-DCMAKE_SYSTEM_NAME=iOS \
 	-DCMAKE_OSX_SYSROOT="$sdk" \

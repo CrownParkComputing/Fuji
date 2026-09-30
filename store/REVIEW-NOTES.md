@@ -60,6 +60,15 @@ finished binary imports any of `socket`, `connect`, `bind`, `listen`,
 `accept`, `getaddrinfo`, `gethostbyname`, `sendto` or `recvfrom`. A configure
 flag is a claim; a symbol table is the fact.
 
+That check found something, and it is worth stating plainly rather than
+leaving to be discovered. Hatari has a control interface that opens a local
+`AF_UNIX` socket so another process on the same machine can drive the
+emulator. It is local inter-process communication and cannot reach a
+network, and on iOS nothing can be the other process — but it did make the
+binary import `socket` and `connect`. It is now compiled out entirely
+(`-DHAVE_UNIX_DOMAIN_SOCKETS=0`), so those symbols are absent rather than
+merely unreachable.
+
 ## Privacy
 
 Nothing is collected, because nothing leaves the device. No data is
