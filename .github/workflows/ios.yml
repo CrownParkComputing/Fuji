@@ -20,7 +20,12 @@ name: iOS
 
 on:
   push:
-    branches: [main]
+    # `shifter` is here because the SwiftUI tree lives on it and GitHub only
+    # offers workflow_dispatch for workflows already on the DEFAULT branch --
+    # so until this becomes main there is no other way to run the job. The
+    # repository's main is an earlier, abandoned C/GEM implementation; which
+    # of the two becomes main is not this file's decision to make.
+    branches: [main, shifter]
     tags: ['ios-v*']
   workflow_dispatch:
     inputs:
