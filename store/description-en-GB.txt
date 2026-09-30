@@ -1,0 +1,39 @@
+Shifter is an Atari ST emulator for iPhone and iPad, built on the Hatari core.
+
+RUNS WITH NOTHING SUPPLIED
+A real ST needs its TOS ROM, and that ROM is not ours to give. Shifter ships
+EmuTOS instead -- a free, open-source replacement -- so the machine boots to a
+desktop the moment you install it. A small demonstration disk is included too,
+so there is something to run straight away. If you own an original TOS image
+you can drop it into the app's folder and the emulator will use it.
+
+SIX MACHINES, NOT ONE
+ST, Mega ST, STE, Mega STE, TT and Falcon 030. Memory, TOS version and machine
+type are all settable, so a title that wants a plain 512K ST gets one and a
+demo that wants an STE gets that instead.
+
+RUN YOUR OWN DISKS
+Add disk images through the Files app: ST, MSA, DIM, STX, IMG and IPF, and ZIP
+archives of any of them. Each one appears in the library, ready to insert.
+
+BUILT FOR TOUCH
+The ST was a mouse-and-keyboard machine, so the mouse is the whole screen and
+the keyboard is the real ST layout, including the function keys and the numeric
+keypad that so many games used. There is a configurable on-screen pad as well:
+put the buttons where your thumbs are, and change it per game.
+
+METAL RENDERING
+The emulated screen goes to the display through Metal, aspect-corrected, at the
+machine's own 50Hz.
+
+FEATURES
+- Hatari emulation of ST, Mega ST, STE, Mega STE, TT and Falcon
+- EmuTOS included; original TOS images supported
+- ST, MSA, DIM, STX, IMG, IPF and ZIP disk images
+- Full ST keyboard, including function keys and keypad
+- Configurable on-screen control pad, per game
+- Adjustable memory and machine type
+
+This app ships with no games and no Atari TOS. Add your own legally owned
+software to begin. It has no network features of any kind: no account, no
+sign-in, no analytics.

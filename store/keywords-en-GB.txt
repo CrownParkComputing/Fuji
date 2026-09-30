@@ -1,0 +1,1 @@
+atari,st,emulator,retro,68000,emutos,floppy,msa,stx,gem,vintage,16-bit,demoscene

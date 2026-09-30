@@ -156,6 +156,32 @@ jobs:
             -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build
 
+      # The review notes will claim this app has no network features. A
+      # configure flag is a claim; a symbol table is the fact. Retro-Amiga
+      # was rejected under guideline 5.6 -- "features that appear to have
+      # been intentionally hidden during review" -- for notes that said no
+      # networking over a binary that imported sockets, which nobody had put
+      # there on purpose. So the claim is checked against the BINARY, on
+      # every run, signed or not.
+      #
+      # Whole symbols, via -x on the extracted name: the sibling app matched
+      # substrings and every PC-98 *_bind symbol read as the socket call
+      # bind(), which failed its build for eight days over nothing.
+      - name: Check the binary cannot reach a network
+        run: |
+          set -euo pipefail
+          app=$(find build -name "$APP.app" -type d | head -1)
+          [ -n "$app" ] || { echo "::error::no $APP.app was built"; exit 1; }
+          BAD=$(nm -u "$app/$APP" 2>/dev/null | awk '{print $NF}' \
+                | grep -xE '_(socket|connect|bind|listen|accept|getaddrinfo|gethostbyname|sendto|recvfrom)' \
+                | sort -u || true)
+          if [ -n "$BAD" ]; then
+            echo "::error::this build can reach the network, and the review notes say it cannot:"
+            echo "$BAD" | sed 's/^/    /'
+            exit 1
+          fi
+          echo "clean: no socket imports in $APP"
+
       # An upload can report "UPLOAD SUCCEEDED", be given a delivery UUID, and
       # then be discarded in processing -- by email, with CI green and no
       # build ever appearing. A missing icon key and a missing purpose string
