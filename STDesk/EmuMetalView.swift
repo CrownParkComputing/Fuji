@@ -61,7 +61,7 @@ struct EmuMetalView: UIViewRepresentable {
                   let library = try? device.makeLibrary(source: shaderSource, options: nil),
                let vertex = library.makeFunction(name: "emuVertex"),
                let fragment = library.makeFunction(name: "emuFragment") else {
-                print("Shifter: Metal shader failed to compile -- the screen will stay black")
+                print("STDesk: Metal shader failed to compile -- the screen will stay black")
                 return
             }
             let descriptor = MTLRenderPipelineDescriptor()

@@ -4,7 +4,7 @@
 <dict>
 	<key>NSPrivacyTracking</key>
 	<false/>
-	<!-- Shifter has no account system and no analytics, so unlike the old app's
+	<!-- STDesk has no account system and no analytics, so unlike the old app's
 	     manifest there are no collected data types at all. -->
 	<key>NSPrivacyCollectedDataTypes</key>
 	<array/>

@@ -1,7 +1,7 @@
-Shifter is an Atari ST emulator for iPhone and iPad, built on the Hatari core.
+ST Desk is an Atari ST emulator for iPhone and iPad, built on the Hatari core.
 
 RUNS WITH NOTHING SUPPLIED
-A real ST needs its TOS ROM, and that ROM is not ours to give. Shifter ships
+A real ST needs its TOS ROM, and that ROM is not ours to give. ST Desk ships
 EmuTOS instead -- a free, open-source replacement -- so the machine boots to a
 desktop the moment you install it. A small demonstration disk is included too,
 so there is something to run straight away. If you own an original TOS image

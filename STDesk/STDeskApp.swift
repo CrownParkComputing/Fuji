@@ -1,7 +1,7 @@
 //
-//  ShifterApp.swift
+//  STDeskApp.swift
 //
-//  Shifter is a SwiftUI front end for the Hatari Atari ST emulator core. The
+//  STDesk is a SwiftUI front end for the Hatari Atari ST emulator core. The
 //  emulator itself lives in the `core` submodule and is reached only through
 //  the plain-C ABI in atarist_bridge.h (see AtariCore.swift).
 //
@@ -9,7 +9,7 @@
 import SwiftUI
 
 @main
-struct ShifterApp: App {
+struct STDeskApp: App {
     @StateObject private var core: AtariCore
     @StateObject private var pad: TouchPadController
 

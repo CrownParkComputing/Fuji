@@ -99,7 +99,7 @@ final class AtariCore: ObservableObject {
     }
 
     static var demoDisk: URL {
-        demoDirectory.appendingPathComponent("shifter-core-demo.st")
+        demoDirectory.appendingPathComponent("stdesk-core-demo.st")
     }
 
     private static var tosDirectory: URL {
@@ -109,7 +109,7 @@ final class AtariCore: ObservableObject {
     private static var workDirectory: URL {
         let support = FileManager.default.urls(for: .applicationSupportDirectory,
                                                in: .userDomainMask)[0]
-        return support.appendingPathComponent("ShifterCore", isDirectory: true)
+        return support.appendingPathComponent("STDeskCore", isDirectory: true)
     }
 
     /// Disk-image filename extensions the launcher lists and imports. Kept in
@@ -147,7 +147,7 @@ final class AtariCore: ObservableObject {
 
         let demo = Self.demoDisk
         if !fm.fileExists(atPath: demo.path),
-           let bundledDemo = Bundle.main.url(forResource: "shifter-core-demo",
+           let bundledDemo = Bundle.main.url(forResource: "stdesk-core-demo",
                                              withExtension: "st",
                                              subdirectory: "Demo") {
             try? fm.copyItem(at: bundledDemo, to: demo)

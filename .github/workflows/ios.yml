@@ -1,6 +1,6 @@
 name: iOS
 
-# Builds, signs and uploads Shifter -- the Atari ST emulator, on the Hatari
+# Builds, signs and uploads STDesk -- the Atari ST emulator, on the Hatari
 # core. Modelled on the DOSDeck workflow in CrownParkComputing/Retro-Dosbox,
 # which is proven end to end; the comments that look like scar tissue are.
 #
@@ -10,7 +10,7 @@ name: iOS
 # that is the point of running it, not a sign the approach is wrong.
 #
 # SECRETS
-#   SHIFTER_PROFILE_BASE64  "Shifter AppStore" profile (DJ9QSQL75F)
+#   STDESK_PROFILE_BASE64  "STDesk AppStore" profile (DJ9QSQL75F)
 #   APPSTORE_CERT_BASE64    distribution .p12, exported with -legacy
 #   APPSTORE_CERT_PASSWORD  its password
 #   ASC_KEY_P8_BASE64 / ASC_KEY_ID / ASC_ISSUER_ID   App Store Connect API key
@@ -20,12 +20,12 @@ name: iOS
 
 on:
   push:
-    # `shifter` is here because the SwiftUI tree lives on it and GitHub only
+    # `stdesk` is here because the SwiftUI tree lives on it and GitHub only
     # offers workflow_dispatch for workflows already on the DEFAULT branch --
     # so until this becomes main there is no other way to run the job. The
     # repository's main is an earlier, abandoned C/GEM implementation; which
     # of the two becomes main is not this file's decision to make.
-    branches: [main, shifter]
+    branches: [main, stdesk]
     tags: ['ios-v*']
   workflow_dispatch:
     inputs:
@@ -39,10 +39,10 @@ env:
   # One place that decides the identity. Spelling these out per-step is how
   # the sibling app ended up building a target and a bundle id that had both
   # been renamed months earlier.
-  APP: Shifter
-  BUNDLE_ID: com.crownparkcomputing.shifter
+  APP: STDesk
+  BUNDLE_ID: com.crownparkcomputing.stdesk
   TEAM_ID: 88A3T9K9C5
-  PROFILE_NAME: Shifter AppStore
+  PROFILE_NAME: ST Desk AppStore
   # `cmake -S core` means the generated project carries HATARI's name, not the
   # app's; the app is a target and a scheme inside it.
   XCPROJ: Hatari.xcodeproj
@@ -52,7 +52,7 @@ jobs:
     if: github.event_name != 'workflow_dispatch' || inputs.only != 'screenshots'
     runs-on: macos-26
     env:
-      HAS_IOS_SIGNING: ${{ secrets.SHIFTER_PROFILE_BASE64 != '' && secrets.APPSTORE_CERT_BASE64 != '' }}
+      HAS_IOS_SIGNING: ${{ secrets.STDESK_PROFILE_BASE64 != '' && secrets.APPSTORE_CERT_BASE64 != '' }}
 
     steps:
       # The Hatari core is a submodule and nothing builds without it.
@@ -72,7 +72,7 @@ jobs:
         if: env.HAS_IOS_SIGNING == 'true'
         env:
           CERT_B64: ${{ secrets.APPSTORE_CERT_BASE64 }}
-          PROFILE_B64: ${{ secrets.SHIFTER_PROFILE_BASE64 }}
+          PROFILE_B64: ${{ secrets.STDESK_PROFILE_BASE64 }}
           KEY_B64: ${{ secrets.ASC_KEY_P8_BASE64 }}
         run: |
           set -euo pipefail
@@ -125,18 +125,18 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$HAS_IOS_SIGNING" = "true" ]; then
-            SIGN_ARGS=(-DSHIFTER_CODE_SIGN_STYLE=Manual
-                       -DSHIFTER_PROVISIONING_PROFILE="$PROFILE_NAME"
-                       -DSHIFTER_CODE_SIGN_IDENTITY="Apple Distribution")
+            SIGN_ARGS=(-DSTDESK_CODE_SIGN_STYLE=Manual
+                       -DSTDESK_PROVISIONING_PROFILE="$PROFILE_NAME"
+                       -DSTDESK_CODE_SIGN_IDENTITY="Apple Distribution")
           else
             SIGN_ARGS=()
           fi
-          SHIFTER_CONFIGURE_ONLY=1 ./build.sh iphoneos \
+          STDESK_CONFIGURE_ONLY=1 ./build.sh iphoneos \
             -DDEVELOPMENT_TEAM="$TEAM_ID" \
-            -DSHIFTER_BUILD_NUMBER="$BUILD_NUMBER" \
+            -DSTDESK_BUILD_NUMBER="$BUILD_NUMBER" \
             "${SIGN_ARGS[@]+"${SIGN_ARGS[@]}"}"
 
-      # Signing lives on the target (set in cmake/shifter-app.cmake), never on
+      # Signing lives on the target (set in cmake/stdesk-app.cmake), never on
       # this command line: a command-line PROVISIONING_PROFILE_SPECIFIER
       # applies to EVERY target, including the static libraries, which then
       # fail with "does not support provisioning profiles".

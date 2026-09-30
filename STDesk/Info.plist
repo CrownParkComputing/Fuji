@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Shifter</string>
+	<string>ST Desk</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -41,7 +41,7 @@
 	<array>
 		<dict>
 			<key>UTTypeIdentifier</key>
-			<string>com.crownparkcomputing.shifter.atari-disk-image</string>
+			<string>com.crownparkcomputing.stdesk.atari-disk-image</string>
 			<key>UTTypeDescription</key>
 			<string>Atari ST Disk Image</string>
 			<key>UTTypeConformsTo</key>
@@ -62,7 +62,7 @@
 		</dict>
 		<dict>
 			<key>UTTypeIdentifier</key>
-			<string>com.crownparkcomputing.shifter.atari-ipf</string>
+			<string>com.crownparkcomputing.stdesk.atari-ipf</string>
 			<key>UTTypeDescription</key>
 			<string>Atari ST Preservation Image</string>
 			<key>UTTypeConformsTo</key>

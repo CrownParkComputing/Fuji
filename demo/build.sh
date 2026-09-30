@@ -17,7 +17,7 @@ assembler="${VASM:-vasmm68k_mot}"
 linker="${VLINK:-vlink}"
 object="$here/core-demo.o"
 program="$here/COREDEMO.PRG"
-image="$here/../Shifter/Resources/Demo/shifter-core-demo.st"
+image="$here/../STDesk/Resources/Demo/stdesk-core-demo.st"
 
 "$assembler" -m68000 -Fvobj -quiet -o "$object" "$here/core-demo.s"
 "$linker" -b ataritos -nostdlib -s -o "$program" "$object"

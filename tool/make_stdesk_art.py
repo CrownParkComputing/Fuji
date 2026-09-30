@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-"""App icon for Shifter, the Atari ST emulator.
+"""App icon for STDesk, the Atari ST emulator.
 
-    python3 tool/make_shifter_art.py
+    python3 tool/make_stdesk_art.py
 
 WHAT IT DRAWS, AND WHY THAT.
 
-The Shifter is the ST's video chip: it clocks bitplanes out of memory and
-turns them into a picture, and its palette registers are the ones a demo
-rewrites mid-scanline to make RASTER BARS. So the icon is raster bars. The
-mark is the thing the chip is famous for doing, which is also the thing the
-app is named after -- and to anyone who had an ST it is instantly the right
-picture, without a single word of type.
+RASTER BARS. The ST's video chip is called the Shifter: it clocks bitplanes
+out of memory and turns them into a picture, and rewriting its palette
+registers mid-scanline is how a demo draws bars of colour down the screen.
+That effect is the single most recognisable thing the machine ever did, and
+to anyone who owned one it says "Atari ST" instantly, without a word of type
+in the image.
+
+(The app was briefly going to be called Shifter, which would have made the
+mark and the name the same joke. The name was taken; the picture is still
+the right picture.)
 
 DELIBERATELY SHARES NOTHING WITH THE OTHER APPS. Apple rejected the Retro-*
 family under guideline 4.3 for being too alike, so each app that came out of
@@ -141,7 +145,7 @@ def icon():
 
 
 def main():
-    out = os.path.join(HERE, "Shifter", "Assets.xcassets",
+    out = os.path.join(HERE, "STDesk", "Assets.xcassets",
                        "AppIcon.appiconset", "AppIcon-1024.png")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     # RGB, not RGBA: App Store Connect rejects a marketing icon outright for

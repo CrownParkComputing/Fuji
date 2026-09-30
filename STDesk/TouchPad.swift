@@ -18,7 +18,7 @@
 //
 //  The layout JSON is byte-compatible with the C++ encoder: same keys, same
 //  nesting, same %.4g number formatting, cluster ids sorted (std::map
-//  order). A file written by Shifter must load in Retro-Saturn and vice versa.
+//  order). A file written by STDesk must load in Retro-Saturn and vice versa.
 //
 
 import CoreGraphics

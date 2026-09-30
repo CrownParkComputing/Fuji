@@ -1,4 +1,4 @@
-# Shifter — App Review notes
+# ST Desk — App Review notes
 
 Everything BELOW the rule is the reviewer-facing text, and it goes into
 **Review Notes** on **every** submission, not just the first: App Review
@@ -11,7 +11,7 @@ rule so the reviewer never reads our instructions to each other.
 
 ## What this app is
 
-Shifter is an Atari ST emulator for iPhone and iPad. The emulation is
+ST Desk is an Atari ST emulator for iPhone and iPad. The emulation is
 [Hatari](https://www.hatari-emu.org/), GNU GPL v2, used unmodified in every
 respect that matters to the emulation; the SwiftUI interface around it is
 ours. The app credits Hatari and EmuTOS on its About screen, with links to
@@ -33,7 +33,7 @@ a download:
 | Embedded | What it is | Licence |
 |---|---|---|
 | `emutos-1.4-uk.img` | EmuTOS 1.4, a free open-source replacement for the Atari TOS ROM, so the machine can boot with nothing supplied | GNU GPL v2, emutos.sourceforge.io |
-| `shifter-core-demo.st` | A small demonstration floppy we wrote — it boots, draws a moving marker and waits for a key | Ours, GPL v2 with the app |
+| `stdesk-core-demo.st` | A small demonstration floppy we wrote — it boots, draws a moving marker and waits for a key | Ours, GPL v2 with the app |
 
 Everything else a user runs is a file they supply themselves, through the
 Files app, from their own media. The app has no means of acquiring software.

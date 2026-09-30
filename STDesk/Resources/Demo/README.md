@@ -1,6 +1,6 @@
-# Shifter core demo
+# STDesk core demo
 
-`shifter-core-demo.st` is a project-authored, redistributable Atari ST
+`stdesk-core-demo.st` is a project-authored, redistributable Atari ST
 floppy image. It boots `AUTO/COREDEMO.PRG`, displays a moving colour marker and
 waits for keyboard input before returning to the EmuTOS desktop. This gives a
 new installation a visible CPU, video, boot-ROM and input check without an

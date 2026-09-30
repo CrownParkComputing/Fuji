@@ -37,7 +37,7 @@ mkdir -p "$cpu_build"
 
 cmake -S "$script_dir/core" -B "$build_dir" -G Xcode \
 	-DCMAKE_PROJECT_INCLUDE="$script_dir/core/retro/embed.cmake" \
-	-DRETRO_ATARIST_APP_CMAKE="$script_dir/cmake/shifter-app.cmake" \
+	-DRETRO_ATARIST_APP_CMAKE="$script_dir/cmake/stdesk-app.cmake" \
 	-DSDL2_DIR="$script_dir/core/retro/cmake-stubs" \
 	-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH \
 	-DENABLE_SDL3=0 \
@@ -55,12 +55,12 @@ cmake -S "$script_dir/core" -B "$build_dir" -G Xcode \
 # archive is not a build and `cmake --build` cannot produce one. Without this
 # the tree would be configured, built, and then built a second time by the
 # archive -- twice the slowest step in the job for nothing.
-if [ -n "${SHIFTER_CONFIGURE_ONLY:-}" ]; then
-	echo "configured only (SHIFTER_CONFIGURE_ONLY set): $build_dir"
+if [ -n "${STDESK_CONFIGURE_ONLY:-}" ]; then
+	echo "configured only (STDESK_CONFIGURE_ONLY set): $build_dir"
 	exit 0
 fi
 
-# `cmake --build` drives xcodebuild under the hood; building the Shifter target
+# `cmake --build` drives xcodebuild under the hood; building the STDesk target
 # alone keeps Hatari's desktop executable and helper tools uncompiled, exactly
 # as the Android build builds only --target atarist_core's dependents.
-cmake --build "$build_dir" --config Release --target Shifter
+cmake --build "$build_dir" --config Release --target STDesk
