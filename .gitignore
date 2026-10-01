@@ -9,3 +9,7 @@ xcuserdata/
 
 # macOS
 .DS_Store
+
+# Store captures are CI artefacts, regenerated per build.
+store/screenshots/
+store/screenshots-raw-*/
