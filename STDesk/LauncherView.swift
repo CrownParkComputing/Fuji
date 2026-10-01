@@ -27,6 +27,10 @@ struct LauncherView: View {
     @State private var showMachineSetup = false
     @State private var showAbout = false
     @State private var showError = false
+    /// Whether the bundled demo has been unpacked yet. A @State, not a
+    /// FileManager call in the body: the body is evaluated before the file
+    /// exists, and a plain existence check there never re-runs.
+    @State private var hasDemo = false
 
     var body: some View {
         NavigationStack {
@@ -70,6 +74,13 @@ struct LauncherView: View {
                 }
             }
             .onAppear {
+                // Idempotent, and called here as well as in RootView
+                // because a child's onAppear runs BEFORE its parent's: on a
+                // fresh install the demo was still being unpacked when this
+                // body was first evaluated, so the "Run bundled core demo"
+                // button was absent on the one launch that needed it most.
+                core.initialiseIfNeeded()
+                hasDemo = FileManager.default.fileExists(atPath: AtariCore.demoDisk.path)
                 // simctl cannot tap, so a capture run says which sheet to
                 // open; "library" is the bare launcher and needs nothing.
                 if Screenshot.wants("about") { showAbout = true }
@@ -106,7 +117,7 @@ struct LauncherView: View {
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 32)
-            if FileManager.default.fileExists(atPath: AtariCore.demoDisk.path) {
+            if hasDemo {
                 Button {
                     core.start(game: AtariCore.demoDisk)
                 } label: {
