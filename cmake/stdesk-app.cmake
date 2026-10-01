@@ -41,6 +41,7 @@ set_source_files_properties(${STDESK_DEMO_RESOURCES} PROPERTIES
 
 add_executable(STDesk MACOSX_BUNDLE
 	"${STDESK_APP}/STDeskApp.swift"
+	"${STDESK_APP}/Screenshot.swift"
 	"${STDESK_APP}/AtariCore.swift"
 	"${STDESK_APP}/EmuMetalView.swift"
 	"${STDESK_APP}/LauncherView.swift"

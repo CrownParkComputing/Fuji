@@ -274,3 +274,49 @@ jobs:
             fi
             exit 1
           fi
+
+  # -------------------------------------------------------- the store shots
+  # A separate job because it needs a SIMULATOR slice, which is a different
+  # SDK and a different configured tree -- not another arch of the device
+  # build -- and because a screenshot problem should not cost a release. It
+  # signs nothing and uploads nothing to Apple.
+  screenshots:
+    if: github.event_name != 'workflow_dispatch' || inputs.only != 'app'
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Build tools
+        run: python3 -m pip install --break-system-packages --quiet pillow
+
+      - name: Build for the simulator
+        run: ./build.sh iphonesimulator
+
+      - name: Capture
+        run: |
+          set -euo pipefail
+          APP_PATH=$(find build/iphonesimulator -name "$APP.app" -type d | head -1)
+          [ -n "$APP_PATH" ] || { echo "::error::no $APP.app was built"; exit 1; }
+          echo "app: $APP_PATH"
+          tool/capture-screenshots.sh "$APP_PATH"
+
+      - name: Size them for App Store Connect
+        run: |
+          set -euo pipefail
+          tool/make-store-screenshots.py store/screenshots-raw-iphone
+          tool/make-store-screenshots.py store/screenshots-raw-ipad
+
+      # always(): a run that captured three of four screens still produced
+      # three, and throwing them away with the job wastes the whole build.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots
+          path: |
+            store/screenshots
+            store/screenshots-raw-iphone
+            store/screenshots-raw-ipad
+          if-no-files-found: warn

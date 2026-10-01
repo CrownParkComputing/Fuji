@@ -69,6 +69,12 @@ struct LauncherView: View {
                     refreshLibrary()
                 }
             }
+            .onAppear {
+                // simctl cannot tap, so a capture run says which sheet to
+                // open; "library" is the bare launcher and needs nothing.
+                if Screenshot.wants("about") { showAbout = true }
+                if Screenshot.wants("machine") { showMachineSetup = true }
+            }
             .sheet(isPresented: $showMachineSetup) {
                 MachineSetupView()
             }

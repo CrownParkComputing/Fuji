@@ -49,6 +49,13 @@ struct RootView: View {
         }
         .onAppear {
             core.initialiseIfNeeded()
+            // A capture run asking for "run" wants the emulator running.
+            // Routed through start(game:) rather than anything special, so
+            // the photographed state is reached exactly the way a user
+            // reaches it. See Screenshot.swift.
+            if Screenshot.wants("run") {
+                core.start(game: AtariCore.demoDisk)
+            }
         }
     }
 }
