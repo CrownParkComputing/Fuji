@@ -26,6 +26,17 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<!-- The app does not record anything. AVAudioSession is linked because
+	     that is how the bridge plays the ST's sound (core/retro/bridge/
+	     audio_sink_ios.m), and iOS demands the purpose string from any
+	     bundle that LINKS a protected API whether or not it ever calls it.
+	     Apple reports the lack only AFTER a delivery that reported success:
+	     ITMS-90683, by email, hours later, with CI green. The iOS job
+	     checks for it against `nm -u` on the built binary rather than
+	     against a list someone remembered to update, which is how this was
+	     caught before the first upload rather than after it. -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>ST Desk does not record audio. This entry is required because the audio library the app uses to play Atari ST sound links Apple's audio-session API, and iOS asks for the description whether or not recording is ever used.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
