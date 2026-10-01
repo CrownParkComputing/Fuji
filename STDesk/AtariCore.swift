@@ -117,6 +117,33 @@ final class AtariCore: ObservableObject {
     /// the bridge documents (.st, .msa, .dim, .stx, .ipf, .img, .zip).
     static let gameExtensions: Set<String> = ["st", "msa", "dim", "stx", "ipf", "img", "zip"]
 
+    /// Extensions a TOS ROM image is likely to carry.
+    private static let tosExtensions: Set<String> = ["img", "rom", "bin"]
+
+    /// The ROM to boot with: one the user supplied if there is one,
+    /// otherwise the bundled EmuTOS.
+    ///
+    /// The bridge does NOT look in tos_dir for this, despite taking the
+    /// directory in atarist_core_init -- it boots whatever cfg.tos_path
+    /// names and nothing else. Passing nil and expecting a scan left
+    /// cfg_tos empty, so every start returned ATARIST_NO_TOS and the app
+    /// could not run at all. Resolving it here keeps the decision on the
+    /// side that knows where the files are.
+    static var resolvedTOS: URL? {
+        let fm = FileManager.default
+        let bundledName = "emutos-1.4-uk.img"
+        let roms = ((try? fm.contentsOfDirectory(at: tosDirectory,
+                                                 includingPropertiesForKeys: nil)) ?? [])
+            .filter { tosExtensions.contains($0.pathExtension.lowercased()) }
+            .sorted { $0.lastPathComponent < $1.lastPathComponent }
+        // A real TOS the user owns wins: EmuTOS is the fallback, not the
+        // preference, and the review notes promise exactly that behaviour.
+        if let own = roms.first(where: { $0.lastPathComponent != bundledName }) {
+            return own
+        }
+        return roms.first(where: { $0.lastPathComponent == bundledName })
+    }
+
     // MARK: - Lifecycle
 
     init() {
@@ -185,9 +212,9 @@ final class AtariCore: ObservableObject {
         var config = AtariStConfig(
             machine: settings.machine,
             memory_kb: settings.memoryKB,
-            // EmuTOS comes from the tos_dir scan; a NULL tos_path is only
-            // valid because EmuTOS is bundled.
-            tos_path: nil,
+            // Named explicitly. The bridge does not scan tos_dir; it boots
+            // cfg.tos_path or returns ATARIST_NO_TOS.
+            tos_path: dup(Self.resolvedTOS?.path),
             floppy_a: dup(game?.path),
             floppy_b: nil,
             gemdos_dir: nil,
