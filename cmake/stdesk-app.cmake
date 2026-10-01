@@ -15,9 +15,10 @@ set(STDESK_RESOURCES
 	"${STDESK_APP}/PrivacyInfo.xcprivacy"
 	# GPLv2: the app links Hatari, and the licence text must ship with it.
 	"${STDESK_ROOT}/LICENSE"
-	# Bundled as source and compiled at runtime (see attach(to:) in
-	# EmuMetalView.swift): CMake's Xcode generator does not recognise the
-	# .metal file type, so a build-phase compile would silently not happen.
+	# Xcode DOES recognise .metal and compiles this into the app's
+	# default.metallib -- which also means it does not copy the source in.
+	# EmuMetalView reads the compiled library; believing the opposite is
+	# what made the emulator render black at full frame rate.
 	"${STDESK_APP}/EmuShaders.metal"
 	"${STDESK_APP}/Assets.xcassets")
 set_source_files_properties(${STDESK_RESOURCES} PROPERTIES

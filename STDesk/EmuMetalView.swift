@@ -51,17 +51,29 @@ struct EmuMetalView: UIViewRepresentable {
             view.isPaused = true
             view.enableSetNeedsDisplay = false
 
-            // The shader is compiled from bundled source at runtime rather
-            // than from a precompiled .metallib: CMake's Xcode generator does
-            // not know the .metal file type, and a shader that silently never
-            // compiles reads as "black screen", the hardest emulator bug to
-            // diagnose. The source is 30 lines; runtime compile is instant.
-            guard let shaderURL = Bundle.main.url(forResource: "EmuShaders", withExtension: "metal"),
-                  let shaderSource = try? String(contentsOf: shaderURL, encoding: .utf8),
-                  let library = try? device.makeLibrary(source: shaderSource, options: nil),
-               let vertex = library.makeFunction(name: "emuVertex"),
-               let fragment = library.makeFunction(name: "emuFragment") else {
-                print("STDesk: Metal shader failed to compile -- the screen will stay black")
+            // The default library, which is where the shader actually is.
+            //
+            // This used to read EmuShaders.metal out of the bundle and
+            // compile it at runtime, on the belief that "CMake's Xcode
+            // generator does not know the .metal file type". It does know:
+            // it compiles EmuShaders.metal into default.metallib and
+            // therefore does NOT also copy the source in. So the lookup
+            // returned nil on every launch, this guard returned, and the
+            // emulator drew a black screen while reporting a healthy 49 fps
+            // -- exactly the bug the old comment was worried about, caused
+            // by the measure taken to avoid it.
+            //
+            // The source compile stays as a fallback. It costs nothing when
+            // the library is there, and it is the path that works if some
+            // future generator really does only copy the file.
+            let library = device.makeDefaultLibrary()
+                ?? Bundle.main.url(forResource: "EmuShaders", withExtension: "metal")
+                    .flatMap { try? String(contentsOf: $0, encoding: .utf8) }
+                    .flatMap { try? device.makeLibrary(source: $0, options: nil) }
+            guard let library,
+                  let vertex = library.makeFunction(name: "emuVertex"),
+                  let fragment = library.makeFunction(name: "emuFragment") else {
+                print("STDesk: no Metal shader library -- the screen will stay black")
                 return
             }
             let descriptor = MTLRenderPipelineDescriptor()
